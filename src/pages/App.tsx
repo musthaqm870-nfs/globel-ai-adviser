@@ -63,7 +63,7 @@ const AppPage = () => {
             <Link to="/" className="flex items-center gap-2">
               <ArrowLeft className="h-5 w-5" />
               <Globe className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">NomadAI</span>
+              <span className="text-xl font-bold">TripMind</span>
             </Link>
           </div>
         </nav>
@@ -72,7 +72,7 @@ const AppPage = () => {
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="text-center space-y-4">
-              <Badge className="bg-primary/10 text-primary">Welcome to NomadAI</Badge>
+              <Badge className="bg-primary/10 text-primary">Welcome to TripMind</Badge>
               <h1 className="text-4xl font-bold">What Type of Traveler Are You?</h1>
               <p className="text-xl text-muted-foreground">
                 Choose your profile to get personalized recommendations
@@ -117,7 +117,7 @@ const AppPage = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Globe className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">NomadAI</span>
+            <span className="text-xl font-bold">TripMind</span>
             <Badge className="ml-4">
               {travelerTypes.find(t => t.id === selectedType)?.icon} {travelerTypes.find(t => t.id === selectedType)?.title}
             </Badge>

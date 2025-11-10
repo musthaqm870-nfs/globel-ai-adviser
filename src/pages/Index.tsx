@@ -17,7 +17,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Globe className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">NomadAI</span>
+            <span className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">TripMind</span>
           </div>
           <div className="hidden md:flex items-center gap-6">
             <a href="#features" className="text-foreground/70 hover:text-foreground transition-colors">Features</a>
@@ -98,7 +98,7 @@ const Index = () => {
             <Badge className="bg-primary/10 text-primary border-primary/20">Features</Badge>
             <h2 className="text-4xl font-bold">Everything You Need to Travel Smart</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              From AI-powered planning to real-time safety alerts, NomadAI has your back
+              From AI-powered planning to real-time safety alerts, TripMind has your back
             </p>
           </div>
 
@@ -248,7 +248,7 @@ const Index = () => {
               { 
                 name: "Free", 
                 price: "$0", 
-                desc: "Perfect for trying out NomadAI",
+                desc: "Perfect for trying out TripMind",
                 features: ["Basic AI trip planning", "Safety alerts", "Community access", "Limited expense tracking"] 
               },
               { 
@@ -309,7 +309,7 @@ const Index = () => {
         <div className="container mx-auto text-center space-y-6">
           <h2 className="text-4xl md:text-5xl font-bold">Ready to Transform Your Travel?</h2>
           <p className="text-xl opacity-90 max-w-2xl mx-auto">
-            Join thousands of travelers who plan smarter, travel safer, and connect better with NomadAI
+            Join thousands of travelers who plan smarter, travel safer, and connect better with TripMind
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Link to="/app">
@@ -331,7 +331,7 @@ const Index = () => {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Globe className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold">NomadAI</span>
+                <span className="text-xl font-bold">TripMind</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 Your AI-powered travel companion for smarter, safer adventures
@@ -363,7 +363,7 @@ const Index = () => {
             </div>
           </div>
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            © 2025 NomadAI. All rights reserved.
+            © 2025 TripMind. All rights reserved.
           </div>
         </div>
       </footer>
