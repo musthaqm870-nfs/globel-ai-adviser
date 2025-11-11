@@ -23,7 +23,10 @@ const Index = () => {
             <a href="#features" className="text-foreground/70 hover:text-foreground transition-colors">Features</a>
             <a href="#how-it-works" className="text-foreground/70 hover:text-foreground transition-colors">How It Works</a>
             <a href="#pricing" className="text-foreground/70 hover:text-foreground transition-colors">Pricing</a>
-            <Link to="/app">
+            <Link to="/auth">
+              <Button variant="outline">Sign In</Button>
+            </Link>
+            <Link to="/auth">
               <Button variant="hero" size="lg">Get Started</Button>
             </Link>
           </div>
@@ -45,7 +48,7 @@ const Index = () => {
                 Plan smarter, travel safer, and connect with fellow adventurers worldwide. All powered by AI.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/app">
+                <Link to="/auth">
                   <Button variant="hero" size="lg" className="w-full sm:w-auto">
                     Start Your Adventure <ArrowRight className="ml-2" />
                   </Button>
@@ -288,7 +291,7 @@ const Index = () => {
                       </li>
                     ))}
                   </ul>
-                  <Link to="/app" className="block">
+                   <Link to="/auth" className="block">
                     <Button 
                       variant={plan.popular ? "hero" : "outline"} 
                       className="w-full"
@@ -312,7 +315,7 @@ const Index = () => {
             Join thousands of travelers who plan smarter, travel safer, and connect better with TripMind
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Link to="/app">
+            <Link to="/auth">
               <Button variant="secondary" size="lg" className="text-lg px-8">
                 Start Free Trial <Plane className="ml-2" />
               </Button>
