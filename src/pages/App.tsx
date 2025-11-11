@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,9 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { 
   Globe, MapPin, DollarSign, Shield, Users, ArrowLeft, 
-  Plane, Calendar, TrendingUp, AlertTriangle, Check, Camera, LogOut
+  Plane, Calendar, TrendingUp, AlertTriangle, Check, Camera, LogOut, User
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const AppPage = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -148,6 +147,12 @@ const AppPage = () => {
             </Badge>
           </div>
           <div className="flex items-center gap-2">
+            <Link to="/profile">
+              <Button variant="ghost">
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Button>
+            </Link>
             <Button variant="ghost" onClick={() => setSelectedType(null)}>
               Change Profile
             </Button>
