@@ -12,8 +12,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Globe, MapPin, DollarSign, Shield, Users, ArrowLeft, 
-  Plane, Calendar, TrendingUp, AlertTriangle, Check, Camera, LogOut, User, Loader2
+  Plane, Calendar, TrendingUp, AlertTriangle, Check, Camera, LogOut, User, Loader2, Search
 } from "lucide-react";
+
+interface SafetyData {
+  name: string;
+  score: number;
+  message: string;
+  sources_active: number;
+  updated: string;
+  riskLevel: string;
+  color: string;
+}
 
 const AppPage = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -23,6 +33,9 @@ const AppPage = () => {
   const [interests, setInterests] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedItinerary, setGeneratedItinerary] = useState<string | null>(null);
+  const [safetySearchCountry, setSafetySearchCountry] = useState("JP");
+  const [safetyData, setSafetyData] = useState<SafetyData | null>(null);
+  const [isFetchingSafety, setIsFetchingSafety] = useState(false);
   const { user, loading, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -32,6 +45,33 @@ const AppPage = () => {
       navigate("/auth");
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    // Fetch default safety data for Japan on mount
+    fetchSafetyData("JP");
+  }, []);
+
+  const fetchSafetyData = async (countryCode: string) => {
+    setIsFetchingSafety(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("get-travel-safety", {
+        body: { countryCode },
+      });
+
+      if (error) throw error;
+
+      setSafetyData(data);
+    } catch (error: any) {
+      console.error("Error fetching safety data:", error);
+      toast({
+        title: "Failed to fetch safety data",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsFetchingSafety(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -426,43 +466,147 @@ const AppPage = () => {
                   <Shield className="h-6 w-6 text-primary" />
                   Travel Safety Center
                 </CardTitle>
-                <CardDescription>Real-time alerts for your location</CardDescription>
+                <CardDescription>Real-time travel advisories and safety scores</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-primary/10 rounded-lg border border-primary/20">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary text-primary-foreground rounded-full h-12 w-12 flex items-center justify-center font-bold text-xl">
-                      8.2
-                    </div>
-                    <div>
-                      <div className="font-semibold">Tokyo Safety Score</div>
-                      <div className="text-sm text-muted-foreground">Very Safe - Updated 2 hours ago</div>
-                    </div>
+              <CardContent className="space-y-6">
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Label htmlFor="country-code" className="text-sm mb-2 block">
+                      Search by Country Code (e.g., US, JP, GB, FR)
+                    </Label>
+                    <Input
+                      id="country-code"
+                      placeholder="Enter 2-letter country code"
+                      value={safetySearchCountry}
+                      onChange={(e) => setSafetySearchCountry(e.target.value.toUpperCase())}
+                      maxLength={2}
+                      disabled={isFetchingSafety}
+                    />
                   </div>
-                  <Badge className="bg-primary">Excellent</Badge>
+                  <Button
+                    onClick={() => fetchSafetyData(safetySearchCountry)}
+                    disabled={isFetchingSafety || safetySearchCountry.length !== 2}
+                    className="mt-auto"
+                  >
+                    {isFetchingSafety ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Search className="h-4 w-4 mr-2" />
+                        Search
+                      </>
+                    )}
+                  </Button>
                 </div>
 
-                <div className="space-y-3">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-secondary" />
-                    Active Alerts
-                  </h4>
-                  {[
-                    { type: "Weather", title: "Heavy Rain Expected", desc: "Tomorrow 2-5 PM. Plan indoor activities.", severity: "low" },
-                    { type: "Traffic", title: "Station Closure", desc: "Shibuya Station maintenance this weekend.", severity: "medium" },
-                  ].map((alert, i) => (
-                    <div key={i} className={`p-4 rounded-lg border-l-4 ${
-                      alert.severity === "low" ? "border-l-yellow-500 bg-yellow-50 dark:bg-yellow-950/20" : "border-l-orange-500 bg-orange-50 dark:bg-orange-950/20"
-                    }`}>
-                      <div className="font-semibold">{alert.type}: {alert.title}</div>
-                      <p className="text-sm text-muted-foreground">{alert.desc}</p>
+                {safetyData && (
+                  <>
+                    <div 
+                      className={`flex items-center justify-between p-4 rounded-lg border ${
+                        safetyData.color === "green" 
+                          ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
+                          : safetyData.color === "blue"
+                          ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
+                          : safetyData.color === "yellow"
+                          ? "bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800"
+                          : safetyData.color === "orange"
+                          ? "bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800"
+                          : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className={`rounded-full h-14 w-14 flex items-center justify-center font-bold text-xl ${
+                            safetyData.color === "green"
+                              ? "bg-green-500 text-white"
+                              : safetyData.color === "blue"
+                              ? "bg-blue-500 text-white"
+                              : safetyData.color === "yellow"
+                              ? "bg-yellow-500 text-white"
+                              : safetyData.color === "orange"
+                              ? "bg-orange-500 text-white"
+                              : "bg-red-500 text-white"
+                          }`}
+                        >
+                          {safetyData.score.toFixed(1)}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-lg">{safetyData.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            Risk Score: {safetyData.score} / 5.0
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Updated: {new Date(safetyData.updated).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      <Badge 
+                        className={
+                          safetyData.color === "green"
+                            ? "bg-green-500"
+                            : safetyData.color === "blue"
+                            ? "bg-blue-500"
+                            : safetyData.color === "yellow"
+                            ? "bg-yellow-500"
+                            : safetyData.color === "orange"
+                            ? "bg-orange-500"
+                            : "bg-red-500"
+                        }
+                      >
+                        {safetyData.riskLevel}
+                      </Badge>
                     </div>
-                  ))}
-                </div>
 
-                <Button variant="outline" className="w-full">
-                  View All Safety Tips for Tokyo
-                </Button>
+                    <Card className="border-l-4 border-l-primary">
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5" />
+                          Travel Advisory
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm">{safetyData.message}</p>
+                        <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                          <Shield className="h-4 w-4" />
+                          Based on {safetyData.sources_active} active sources
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-sm">Risk Scale Explained:</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                          <span>≤ 2.0 Very Safe</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-blue-500"></div>
+                          <span>≤ 3.0 Safe</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
+                          <span>≤ 3.5 Moderate</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-orange-500"></div>
+                          <span>≤ 4.0 High Risk</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-3 rounded-full bg-red-500"></div>
+                          <span>&gt; 4.0 Extreme</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {!safetyData && !isFetchingSafety && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>Enter a country code to view safety information</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
