@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.get-travel-safety]
 verify_jwt = false
+
+[functions.extract-itinerary-locations]
+verify_jwt = false

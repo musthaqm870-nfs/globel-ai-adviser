@@ -26,6 +26,12 @@ interface SafetyData {
   color: string;
 }
 
+interface MapDestination {
+  name: string;
+  coordinates: [number, number];
+  type?: string;
+}
+
 const AppPage = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [destination, setDestination] = useState("");
@@ -34,6 +40,7 @@ const AppPage = () => {
   const [interests, setInterests] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedItinerary, setGeneratedItinerary] = useState<string | null>(null);
+  const [mapDestinations, setMapDestinations] = useState<MapDestination[]>([]);
   const [safetySearchCountry, setSafetySearchCountry] = useState("JP");
   const [safetyData, setSafetyData] = useState<SafetyData | null>(null);
   const [isFetchingSafety, setIsFetchingSafety] = useState(false);
@@ -331,6 +338,26 @@ const AppPage = () => {
                       if (error) throw error;
 
                       setGeneratedItinerary(data.itinerary);
+                      
+                      // Extract locations from the itinerary for the map
+                      try {
+                        const { data: locationsData, error: locationsError } = await supabase.functions.invoke(
+                          "extract-itinerary-locations",
+                          {
+                            body: { itinerary: data.itinerary },
+                          }
+                        );
+
+                        if (locationsError) {
+                          console.error("Error extracting locations:", locationsError);
+                        } else if (locationsData?.locations) {
+                          setMapDestinations(locationsData.locations);
+                        }
+                      } catch (locError) {
+                        console.error("Failed to extract locations:", locError);
+                        // Don't fail the whole operation if location extraction fails
+                      }
+
                       toast({
                         title: "Itinerary generated!",
                         description: "Your personalized trip plan is ready.",
@@ -419,19 +446,39 @@ const AppPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[600px] rounded-lg overflow-hidden border">
-                  <Map 
-                    destinations={[
-                      { name: "Tokyo, Japan", coordinates: [139.6917, 35.6895] },
-                      { name: "Paris, France", coordinates: [2.3522, 48.8566] },
-                      { name: "New York, USA", coordinates: [-74.0060, 40.7128] }
-                    ]}
-                    safetyZones={[
-                      { coordinates: [139.6917, 35.6895], level: "safe" },
-                      { coordinates: [2.3522, 48.8566], level: "moderate" }
-                    ]}
-                  />
-                </div>
+                {mapDestinations.length === 0 ? (
+                  <div className="h-[600px] rounded-lg overflow-hidden border flex items-center justify-center bg-muted/30">
+                    <div className="text-center p-8">
+                      <MapIcon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">No Destinations Yet</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Generate an itinerary in the Planner tab to see destinations on the map
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="h-[600px] rounded-lg overflow-hidden border">
+                      <Map 
+                        destinations={mapDestinations}
+                        safetyZones={[]}
+                      />
+                    </div>
+                    <div className="mt-4 p-4 bg-muted rounded-lg">
+                      <h4 className="font-semibold mb-2">
+                        {mapDestinations.length} {mapDestinations.length === 1 ? 'Location' : 'Locations'} Found
+                      </h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                        {mapDestinations.map((dest, i) => (
+                          <div key={i} className="text-sm flex items-center gap-2 p-2 bg-background rounded">
+                            <MapPin className="h-3 w-3 text-primary flex-shrink-0" />
+                            <span className="truncate">{dest.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
                 <div className="mt-4 p-4 bg-muted rounded-lg">
                   <h4 className="font-semibold mb-2">Map Legend</h4>
                   <div className="space-y-2 text-sm">
