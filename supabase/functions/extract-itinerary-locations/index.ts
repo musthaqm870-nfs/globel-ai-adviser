@@ -42,11 +42,11 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a travel location extraction assistant. Extract all significant locations (cities, landmarks, attractions, neighborhoods) from the itinerary and provide their approximate coordinates."
+            content: "You are a travel location extraction assistant. Extract all significant locations (cities, landmarks, attractions, neighborhoods) from the itinerary with their details, coordinates, descriptions, and top recommendations."
           },
           {
             role: "user",
-            content: `Extract all locations from this itinerary and provide their coordinates:\n\n${itinerary}`
+            content: `Extract all locations from this itinerary with detailed information:\n\n${itinerary}`
           }
         ],
         tools: [
@@ -54,7 +54,7 @@ serve(async (req) => {
             type: "function",
             function: {
               name: "extract_locations",
-              description: "Extract locations with their coordinates from a travel itinerary",
+              description: "Extract locations with their coordinates, descriptions, and recommendations from a travel itinerary",
               parameters: {
                 type: "object",
                 properties: {
@@ -78,9 +78,20 @@ serve(async (req) => {
                           type: "string",
                           enum: ["city", "attraction", "landmark", "neighborhood"],
                           description: "Type of location"
+                        },
+                        description: {
+                          type: "string",
+                          description: "A brief 1-2 sentence description of the location highlighting what makes it special"
+                        },
+                        recommendations: {
+                          type: "array",
+                          items: { type: "string" },
+                          description: "Top 3-5 things to do, see, or experience at this location",
+                          minItems: 3,
+                          maxItems: 5
                         }
                       },
-                      required: ["name", "coordinates", "type"],
+                      required: ["name", "coordinates", "type", "description", "recommendations"],
                       additionalProperties: false
                     }
                   }
