@@ -19,6 +19,7 @@ All colors MUST be HSL.
 
     --primary: 190 85% 45%;
     --primary-foreground: 0 0% 100%;
+    --primary-glow: 200 80% 60%;
 
     --secondary: 15 90% 65%;
     --secondary-foreground: 0 0% 100%;
@@ -63,6 +64,7 @@ All colors MUST be HSL.
 
     --primary: 190 85% 55%;
     --primary-foreground: 215 30% 8%;
+    --primary-glow: 200 75% 65%;
 
     --secondary: 15 85% 60%;
     --secondary-foreground: 0 0% 100%;
@@ -94,4 +96,31 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom Mapbox popup styles */
+.mapboxgl-popup-content {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  overflow: hidden;
+}
+
+.mapboxgl-popup-close-button {
+  font-size: 20px;
+  padding: 8px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  right: 8px;
+  top: 8px;
+}
+
+.mapboxgl-popup-close-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: white;
 }
