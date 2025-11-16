@@ -66,17 +66,25 @@ const Map = ({ destinations = [], safetyZones = [] }: MapProps) => {
     markers.forEach(marker => marker.remove());
 
     // Add destination markers with enhanced popups
-    destinations.forEach((dest) => {
+    destinations.forEach((dest, index) => {
       const el = document.createElement('div');
       el.className = 'mapbox-marker';
       el.style.backgroundColor = 'hsl(var(--primary))';
-      el.style.width = '24px';
-      el.style.height = '24px';
+      el.style.width = '36px';
+      el.style.height = '36px';
       el.style.borderRadius = '50%';
       el.style.border = '3px solid white';
       el.style.cursor = 'pointer';
-      el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+      el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
       el.style.transition = 'transform 0.2s';
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.style.color = 'white';
+      el.style.fontWeight = '700';
+      el.style.fontSize = '16px';
+      el.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+      el.textContent = (index + 1).toString();
       
       el.addEventListener('mouseenter', () => {
         el.style.transform = 'scale(1.2)';
@@ -92,6 +100,9 @@ const Map = ({ destinations = [], safetyZones = [] }: MapProps) => {
           <!-- Header with photo placeholder -->
           <div style="width: 100%; height: 140px; background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%); border-radius: 8px 8px 0 0; margin: -15px -15px 12px -15px; position: relative; overflow: hidden;">
             <div style="position: absolute; inset: 0; background-image: url('https://source.unsplash.com/400x200/?${encodeURIComponent(dest.name)},landmark,travel'); background-size: cover; background-position: center; opacity: 0.9;"></div>
+            <div style="position: absolute; top: 12px; left: 12px; width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: hsl(var(--primary)); box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+              ${index + 1}
+            </div>
             <div style="position: absolute; bottom: 8px; left: 12px; right: 12px;">
               <h3 style="color: white; font-size: 18px; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${dest.name}</h3>
             </div>
