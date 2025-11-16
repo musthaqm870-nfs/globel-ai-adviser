@@ -22,6 +22,8 @@ const Map = ({ destinations = [], safetyZones = [] }: MapProps) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapboxToken, setMapboxToken] = useState('');
   const [isTokenSet, setIsTokenSet] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const animationRef = useRef<number>();
 
   const initializeMap = () => {
     if (!mapContainer.current || !mapboxToken) return;
@@ -42,6 +44,11 @@ const Map = ({ destinations = [], safetyZones = [] }: MapProps) => {
         }),
         'top-right'
       );
+
+      // Set up map load event
+      map.current.on('load', () => {
+        setMapLoaded(true);
+      });
 
       setIsTokenSet(true);
       toast.success('Map initialized successfully!');
@@ -156,16 +163,121 @@ const Map = ({ destinations = [], safetyZones = [] }: MapProps) => {
         .addTo(map.current!);
     });
 
+    // Add animated route visualization
+    if (mapLoaded && destinations.length > 1) {
+      // Remove existing route layers if they exist
+      if (map.current?.getLayer('route-line')) {
+        map.current.removeLayer('route-line');
+      }
+      if (map.current?.getLayer('route-line-glow')) {
+        map.current.removeLayer('route-line-glow');
+      }
+      if (map.current?.getSource('route')) {
+        map.current.removeSource('route');
+      }
+
+      // Create route coordinates
+      const routeCoordinates = destinations.map(dest => dest.coordinates);
+      
+      // Add route source
+      map.current?.addSource('route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: routeCoordinates
+          }
+        }
+      });
+
+      // Add glow layer (outer line)
+      map.current?.addLayer({
+        id: 'route-line-glow',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': 'hsl(190, 85%, 55%)',
+          'line-width': 8,
+          'line-opacity': 0.4,
+          'line-blur': 4
+        }
+      });
+
+      // Add main route layer
+      map.current?.addLayer({
+        id: 'route-line',
+        type: 'line',
+        source: 'route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': 'hsl(190, 85%, 45%)',
+          'line-width': 4,
+          'line-opacity': 0.9
+        }
+      });
+
+      // Animate the line with dash-array
+      let dashArraySequence = [
+        [0, 4, 3],
+        [0.5, 4, 2.5],
+        [1, 4, 2],
+        [1.5, 4, 1.5],
+        [2, 4, 1],
+        [2.5, 4, 0.5],
+        [3, 4, 0],
+        [0, 0.5, 3, 3.5],
+        [0, 1, 3, 3],
+        [0, 1.5, 3, 2.5],
+        [0, 2, 3, 2],
+        [0, 2.5, 3, 1.5],
+        [0, 3, 3, 1],
+        [0, 3.5, 3, 0.5]
+      ];
+      
+      let step = 0;
+      
+      const animateDashArray = (timestamp: number) => {
+        if (!map.current?.getLayer('route-line')) return;
+        
+        const newStep = Math.floor((timestamp / 50) % dashArraySequence.length);
+        
+        if (newStep !== step) {
+          map.current?.setPaintProperty(
+            'route-line',
+            'line-dasharray',
+            dashArraySequence[newStep]
+          );
+          step = newStep;
+        }
+        
+        animationRef.current = requestAnimationFrame(animateDashArray);
+      };
+      
+      animationRef.current = requestAnimationFrame(animateDashArray);
+    }
+
     // Fit bounds if destinations exist
     if (destinations.length > 0) {
       const bounds = new mapboxgl.LngLatBounds();
       destinations.forEach(dest => bounds.extend(dest.coordinates));
-      map.current?.fitBounds(bounds, { padding: 50 });
+      map.current?.fitBounds(bounds, { padding: 80 });
     }
-  }, [destinations, safetyZones, isTokenSet]);
+  }, [destinations, safetyZones, isTokenSet, mapLoaded]);
 
   useEffect(() => {
     return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
       map.current?.remove();
     };
   }, []);
