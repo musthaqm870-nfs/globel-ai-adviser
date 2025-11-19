@@ -15,6 +15,7 @@ import {
   Globe, MapPin, DollarSign, Shield, Users, ArrowLeft, 
   Plane, Calendar, TrendingUp, AlertTriangle, Check, Camera, LogOut, User, Loader2, Search, Map as MapIcon
 } from "lucide-react";
+import ItineraryDisplay from "@/components/ItineraryDisplay";
 
 interface SafetyData {
   name: string;
@@ -393,11 +394,9 @@ const AppPage = () => {
                         {duration} {parseInt(duration) === 1 ? "Day" : "Days"} in {destination}
                       </Badge>
                     </div>
-                    <Card className="border-l-4 border-l-primary">
+                    <Card className="border-l-4 border-l-primary bg-gradient-to-br from-background to-muted/20">
                       <CardContent className="pt-6">
-                        <div className="prose prose-sm max-w-none dark:prose-invert whitespace-pre-wrap">
-                          {generatedItinerary}
-                        </div>
+                        <ItineraryDisplay itinerary={generatedItinerary} />
                       </CardContent>
                     </Card>
                     <div className="flex gap-3">
