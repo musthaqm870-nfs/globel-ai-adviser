@@ -16,6 +16,7 @@ import {
   Plane, Calendar, TrendingUp, AlertTriangle, Check, Camera, LogOut, User, Loader2, Search, Map as MapIcon
 } from "lucide-react";
 import ItineraryDisplay from "@/components/ItineraryDisplay";
+import { CountrySelector } from "@/components/CountrySelector";
 
 interface SafetyData {
   name: string;
@@ -571,34 +572,28 @@ const AppPage = () => {
                 <CardDescription>Real-time travel advisories and safety scores</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Label htmlFor="country-code" className="text-sm mb-2 block">
-                      Search by Country Code (e.g., US, JP, GB, FR)
-                    </Label>
-                    <Input
-                      id="country-code"
-                      placeholder="Enter 2-letter country code"
-                      value={safetySearchCountry}
-                      onChange={(e) => setSafetySearchCountry(e.target.value.toUpperCase())}
-                      maxLength={2}
-                      disabled={isFetchingSafety}
-                    />
+                <div className="space-y-2">
+                  <Label htmlFor="country-selector" className="text-sm">
+                    Select a Country
+                  </Label>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <CountrySelector
+                        value={safetySearchCountry}
+                        onChange={setSafetySearchCountry}
+                      />
+                    </div>
+                    <Button
+                      onClick={() => fetchSafetyData(safetySearchCountry)}
+                      disabled={isFetchingSafety || safetySearchCountry.length !== 2}
+                    >
+                      {isFetchingSafety ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Search className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
-                  <Button
-                    onClick={() => fetchSafetyData(safetySearchCountry)}
-                    disabled={isFetchingSafety || safetySearchCountry.length !== 2}
-                    className="mt-auto"
-                  >
-                    {isFetchingSafety ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>
-                        <Search className="h-4 w-4 mr-2" />
-                        Search
-                      </>
-                    )}
-                  </Button>
                 </div>
 
                 {safetyData && (
