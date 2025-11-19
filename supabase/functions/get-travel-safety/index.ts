@@ -82,8 +82,9 @@ serve(async (req) => {
     console.log(`Fetching safety data for country: ${countryCode}`);
 
     // Fetch travel advisory data from Travel-Advisory.info API
+    // Using HTTP instead of HTTPS due to SSL certificate issues
     const response = await fetch(
-      `https://www.travel-advisory.info/api?countrycode=${countryCode.toUpperCase()}`
+      `http://www.travel-advisory.info/api?countrycode=${countryCode.toUpperCase()}`
     );
 
     if (!response.ok) {
