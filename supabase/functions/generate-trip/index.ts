@@ -32,13 +32,13 @@ serve(async (req) => {
       );
     }
 
+    const token = authHeader.replace('Bearer ', '');
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) {
       console.error("Authentication error:", authError);
       return new Response(
