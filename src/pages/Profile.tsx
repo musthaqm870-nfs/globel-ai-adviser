@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Globe, ArrowLeft, User, MapPin, DollarSign, Languages, Save } from "lucide-react";
+import { getSafeErrorMessage } from "@/lib/errorUtils";
 import { Link } from "react-router-dom";
 
 const Profile = () => {
@@ -61,7 +62,7 @@ const Profile = () => {
     } catch (error: any) {
       toast({
         title: "Error loading profile",
-        description: error.message,
+        description: getSafeErrorMessage(error, "Profile fetch"),
         variant: "destructive",
       });
     } finally {
@@ -102,7 +103,7 @@ const Profile = () => {
     } catch (error: any) {
       toast({
         title: "Error updating profile",
-        description: error.message,
+        description: getSafeErrorMessage(error, "Profile update"),
         variant: "destructive",
       });
     } finally {

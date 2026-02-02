@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_usage: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: string
+          request_count: number | null
+          user_id: string
+          window_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          request_count?: number | null
+          user_id: string
+          window_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          request_count?: number | null
+          user_id?: string
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -94,7 +121,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_rate_limit: {
+        Args: {
+          p_endpoint: string
+          p_max_requests: number
+          p_user_id: string
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
