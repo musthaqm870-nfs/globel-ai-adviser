@@ -47,6 +47,48 @@ export type Database = {
         }
         Relationships: []
       }
+      trips: {
+        Row: {
+          budget_usd: number | null
+          created_at: string | null
+          destination: string
+          duration_days: number
+          error_message: string | null
+          id: string
+          interests: string | null
+          itinerary: Json | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          budget_usd?: number | null
+          created_at?: string | null
+          destination: string
+          duration_days: number
+          error_message?: string | null
+          id?: string
+          interests?: string | null
+          itinerary?: Json | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          budget_usd?: number | null
+          created_at?: string | null
+          destination?: string
+          duration_days?: number
+          error_message?: string | null
+          id?: string
+          interests?: string | null
+          itinerary?: Json | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
