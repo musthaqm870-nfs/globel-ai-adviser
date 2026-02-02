@@ -60,6 +60,33 @@ serve(async (req) => {
 
     console.log(`Safety data request from user: ${user.id}`);
 
+    // Rate limiting: 50 requests per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { data: usageData } = await supabase
+      .from('api_usage')
+      .select('request_count')
+      .eq('user_id', user.id)
+      .eq('endpoint', 'travel-safety')
+      .gte('window_start', oneHourAgo);
+
+    const totalRequests = usageData?.reduce((sum, record) => sum + (record.request_count || 0), 0) || 0;
+    
+    if (totalRequests >= 50) {
+      console.log(`Rate limit exceeded for user ${user.id}: ${totalRequests} requests`);
+      return new Response(
+        JSON.stringify({ error: "Rate limit exceeded. You can check safety data up to 50 times per hour. Please try again later." }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Record this request
+    await supabase
+      .from('api_usage')
+      .insert({ user_id: user.id, endpoint: 'travel-safety', request_count: 1 });
+
     const requestBody = await req.json();
     
     // Validate input

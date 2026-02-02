@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import ItineraryDisplay from "@/components/ItineraryDisplay";
 import { CountrySelector } from "@/components/CountrySelector";
+import { getSafeErrorMessage } from "@/lib/errorUtils";
 
 interface SafetyData {
   name: string;
@@ -75,7 +76,7 @@ const AppPage = () => {
       console.error("Error fetching safety data:", error);
       toast({
         title: "Failed to fetch safety data",
-        description: error.message || "Please try again later.",
+        description: getSafeErrorMessage(error, "Safety data"),
         variant: "destructive",
       });
     } finally {
@@ -368,7 +369,7 @@ const AppPage = () => {
                       console.error("Error generating itinerary:", error);
                       toast({
                         title: "Failed to generate itinerary",
-                        description: error.message || "Please try again later.",
+                        description: getSafeErrorMessage(error, "Trip generation"),
                         variant: "destructive",
                       });
                     } finally {
