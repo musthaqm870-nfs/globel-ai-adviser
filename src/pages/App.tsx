@@ -325,6 +325,16 @@ const AppPage = () => {
                       return;
                     }
 
+                    const durationNum = parseInt(duration, 10);
+                    if (isNaN(durationNum) || durationNum < 1 || durationNum > 30) {
+                      toast({
+                        title: "Invalid duration",
+                        description: "Duration must be a number between 1 and 30 days.",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+
                     setIsGenerating(true);
                     setGeneratedItinerary(null);
 
