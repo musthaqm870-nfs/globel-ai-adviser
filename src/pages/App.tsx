@@ -332,7 +332,7 @@ const AppPage = () => {
                       const { data, error } = await supabase.functions.invoke("generate-trip", {
                         body: { 
                           destination, 
-                          duration, 
+                          duration: parseInt(duration, 10), 
                           budget: `$${budget}`, 
                           interests 
                         },
