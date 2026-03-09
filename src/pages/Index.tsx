@@ -53,9 +53,6 @@ const Index = () => {
                     Start Your Adventure <ArrowRight className="ml-2" />
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Watch Demo
-                </Button>
               </div>
               <div className="flex items-center gap-8 pt-4">
                 <div>
